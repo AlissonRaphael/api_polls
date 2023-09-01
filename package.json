@@ -1,0 +1,20 @@
+{
+  "name": "api_polls",
+  "version": "1.0.0",
+  "description": "This repository contains the implementation of an api aimed at collecting information (anonymously) through the creation of surveys with interactive polls",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlissonRaphael/api_polls.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlissonRaphael/api_polls/issues"
+  },
+  "homepage": "https://github.com/AlissonRaphael/api_polls#readme"
+}
