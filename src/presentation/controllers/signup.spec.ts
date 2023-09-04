@@ -1,6 +1,5 @@
 import { SignUpController } from './signup'
-import { MissingParamError } from '../errors/missing-param-error'
-import { InvalidParamError } from '../errors/invalid-param-error'
+import { MissingParamError, InvalidParamError, ServerError } from '../errors'
 import { type EmailValidator } from '../protocols/email-validator'
 
 const signUpController = (emailValidator?: EmailValidator): SignUpController => {
@@ -90,5 +89,26 @@ describe('SignUp Controller', () => {
     const response = signUpControllerTest.handle(httpRequest)
     expect(response.statusCode).toBe(400)
     expect(response.body).toEqual(new InvalidParamError('email'))
+  })
+
+  test('Should return 500 if EmailValidator throws', () => {
+    class EmailValidatorStub implements EmailValidator {
+      isValid (email: string): boolean {
+        throw new Error()
+      }
+    }
+    const emailValidatorStub = new EmailValidatorStub()
+    const signUpControllerTest = signUpController(emailValidatorStub)
+    const httpRequest = {
+      body: {
+        name: 'Bob',
+        email: 'any_email@test.com',
+        password: '12345',
+        passwordConfirmation: '12345'
+      }
+    }
+    const response = signUpControllerTest.handle(httpRequest)
+    expect(response.statusCode).toBe(500)
+    expect(response.body).toEqual(new ServerError())
   })
 })
