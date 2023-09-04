@@ -70,6 +70,21 @@ describe('SignUp Controller', () => {
     expect(response.body).toEqual(new MissingParamError('passwordConfirmation'))
   })
 
+  test('Should return 400 if no confirmation fails', () => {
+    const signUpControllerTest = signUpController()
+    const httpRequest = {
+      body: {
+        name: 'Bob',
+        email: 'email@test.com',
+        password: '12345',
+        passwordConfirmation: '54321'
+      }
+    }
+    const response = signUpControllerTest.handle(httpRequest)
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual(new InvalidParamError('passwordConfirmation'))
+  })
+
   test('Should return 400 if an invalid email provided', () => {
     class EmailValidatorStub implements EmailValidator {
       isValid (email: string): boolean {
