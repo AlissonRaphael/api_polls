@@ -1,7 +1,6 @@
 import { SignUpController } from './signup'
 import { MissingParamError, InvalidParamError, ServerError } from '../../errors'
-import { type EmailValidator } from './protocols'
-import { type AddAccount } from '../../../domain/usecases/add-account'
+import { type EmailValidator, type AddAccount } from './protocols'
 
 const signUpController = (): any => {
   class EmailValidatorStub implements EmailValidator {
@@ -138,7 +137,7 @@ describe('SignUp Controller', () => {
   test('Should return 500 if EmailValidator throws', () => {
     const { create, emailValidatorStub } = signUpController()
     const signUpControllerTest = create()
-    jest.spyOn(emailValidatorStub, 'isValid').mockImplementation(() => { throw new Error() })
+    jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => { throw new Error() })
     const httpRequest = {
       body: {
         name: 'Bob',
@@ -170,6 +169,42 @@ describe('SignUp Controller', () => {
       name: 'valid_name',
       email: 'valid_email@test.com',
       password: '12345'
+    })
+  })
+
+  test('Should return 500 if AddAccount throws', () => {
+    const { create, addAccountStub } = signUpController()
+    const signUpControllerTest = create()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => { throw new Error() })
+    const httpRequest = {
+      body: {
+        name: 'valid_name',
+        email: 'valid_email@test.com',
+        password: '12345',
+        passwordConfirmation: '12345'
+      }
+    }
+    const response = signUpControllerTest.handle(httpRequest)
+    expect(response.statusCode).toBe(500)
+    expect(response.body).toEqual(new ServerError())
+  })
+
+  test('Should return 200 if valid data provided', () => {
+    const signUpControllerTest = signUpController().create()
+    const httpRequest = {
+      body: {
+        name: 'valid_name',
+        email: 'valid_email@test.com',
+        password: '12345',
+        passwordConfirmation: '12345'
+      }
+    }
+    const response = signUpControllerTest.handle(httpRequest)
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual({
+      id: 'valid_uuid',
+      name: 'valid_name',
+      email: 'valid_email@test.com'
     })
   })
 })
