@@ -4,7 +4,7 @@
   "description": "This repository contains the implementation of an api aimed at collecting information (anonymously) through the creation of surveys with interactive polls",
   "main": "index.js",
   "scripts": {
-    "test": "jest --silent --noStackTrace --runInBand",
+    "test": "jest --silent --noStackTrace --runInBand --all",
     "test:unit": "npm test -- --watch -config jest-unit.config.js",
     "test:integration": "npm test -- --watch -config jest-integration.config.js",
     "test:coverage": "npm test -- --coverage",
