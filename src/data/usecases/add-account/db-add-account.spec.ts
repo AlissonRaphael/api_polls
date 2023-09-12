@@ -57,4 +57,18 @@ describe('DbAddAccount Usecase', () => {
       password: 'hashed_password'
     })
   })
+
+  test('Should return an account on success', async () => {
+    const addAccountTest = dbAddAccount().create()
+    const account = await addAccountTest.add({
+      name: 'Bob',
+      email: 'valid_email@domain.com',
+      password: '12345'
+    })
+    expect(account).toEqual({
+      id: 0,
+      name: 'Bob',
+      email: 'valid_email@domain.com'
+    })
+  })
 })
