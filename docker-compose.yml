@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  postgres9:
+    image: postgres:9.6
+    container_name: pg9_api_polls
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=polls_dev
+    ports:
+      - "5555:5432"
