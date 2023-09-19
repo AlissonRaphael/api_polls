@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/AlissonRaphael/api_polls#readme",
   "devDependencies": {
+    "@shelf/jest-postgres": "^1.2.0",
     "@types/bcrypt": "^5.0.0",
     "@types/jest": "^29.5.4",
     "@types/node": "^20.5.7",
