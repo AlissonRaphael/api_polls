@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch 'src/' --exec 'ts-node src/main/server.ts' -e ts",
-    "test": "jest --silent --noStackTrace --runInBand --all",
+    "test": "jest --runInBand --all",
     "test:unit": "npm test -- --watch -config jest-unit.config.js",
     "test:integration": "npm test -- --watch -config jest-integration.config.js",
     "test:coverage": "npm test -- --coverage",
