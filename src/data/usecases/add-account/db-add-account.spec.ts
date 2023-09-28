@@ -14,7 +14,9 @@ const dbAddAccount = (): any => {
         resolve({
           id: 0,
           name: 'Bob',
-          email: 'valid_email@domain.com'
+          email: 'valid_email@domain.com',
+          password: 'hashed_password',
+          createdAt: new Date(Date.now())
         })
       })
     }
@@ -68,7 +70,9 @@ describe('DbAddAccount Usecase', () => {
     expect(account).toEqual({
       id: 0,
       name: 'Bob',
-      email: 'valid_email@domain.com'
+      email: 'valid_email@domain.com',
+      password: 'hashed_password',
+      createdAt: new Date(Date.now())
     })
   })
 })
