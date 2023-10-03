@@ -1,4 +1,4 @@
-import { prisma } from '..'
+import prisma from '..'
 import { type AccountModel, type AddAccountModel } from '../../../../data/usecases/add-account/protocols/index'
 
 export class AccountPostgresRepository {
