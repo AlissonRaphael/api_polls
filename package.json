@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch 'src/' --exec 'ts-node src/main/server.ts' -e ts",
+    "test:up-env": "docker run --name api_polls_tests -p 65432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=polls_tests -d postgres:9.6",
+    "test:down-env": "docker stop api_polls_tests && docker rm api_polls_tests",
     "test": "jest --runInBand --all",
     "test:unit": "npm test -- --watch -config jest-unit.config.js",
     "test:integration": "npm test -- --watch -config jest-integration.config.js",
@@ -41,6 +43,7 @@
   "dependencies": {
     "@prisma/client": "^5.3.1",
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "fast-glob": "^3.3.1",
     "validator": "^13.11.0"
