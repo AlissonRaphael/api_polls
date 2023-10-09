@@ -9,7 +9,7 @@
     "test:down-env": "docker stop api_polls_tests && docker rm api_polls_tests",
     "test": "jest --runInBand --all",
     "test:unit": "npm test -- --watch -config jest-unit.config.js",
-    "test:integration": "npm test -- --watch -config jest-integration.config.js",
+    "test:e2e": "npm test -- --watch -config jest-e2e.config.js",
     "test:coverage": "npm test -- --coverage",
     "test:log": "jest --passWithNoTests"
   },
