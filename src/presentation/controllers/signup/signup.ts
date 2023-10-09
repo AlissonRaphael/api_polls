@@ -1,4 +1,4 @@
-import { type httpResponse, type httpRequest, type Controller, type EmailValidator, type AddAccount } from './protocols'
+import { type HttpResponse, type HttpRequest, type Controller, type EmailValidator, type AddAccount } from './protocols'
 import { MissingParamError, InvalidParamError } from '../../errors'
 import { badRequest, serverError, ok } from '../../helpers/http-helper'
 import { validationParamRequest } from '../../helpers/validation-params-helper'
@@ -9,7 +9,7 @@ export class SignUpController implements Controller {
     private readonly addAccount: AddAccount
   ) {}
 
-  async handle (httpRequest: httpRequest): Promise<httpResponse> {
+  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const missingParam = validationParamRequest(httpRequest.body)
       if (missingParam) {
