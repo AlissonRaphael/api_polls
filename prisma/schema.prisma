@@ -17,3 +17,9 @@ model Account {
   password  String
   createdAt DateTime @default(now())
 }
+
+model LogError {
+  id        String      @id @default(uuid())
+  stack     String
+  createdAt DateTime @default(now())
+}
