@@ -57,6 +57,29 @@ describe('LogController Decorator', () => {
     expect(handleSpy).toHaveBeenCalledWith(httpRequest)
   })
 
+  test('Should return the same result of the controller', async () => {
+    const logControllerTest = logController().create()
+    const httpRequest: HttpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@domain.com',
+        password: '12345',
+        passwordConfirmation: '12345'
+      }
+    }
+    const response = await logControllerTest.handle(httpRequest)
+    expect(response).toEqual({
+      statusCode: 200,
+      body: {
+        id: 1,
+        name: 'any_name',
+        email: 'any_email@domain.com',
+        password: '12345',
+        createdAt: new Date(Date.now())
+      }
+    })
+  })
+
   test('Should call LogErrorRepository with correct error if controller returns a server error', async () => {
     const { create, controllerStub, logErrorRepositoryStub } = logController()
 
