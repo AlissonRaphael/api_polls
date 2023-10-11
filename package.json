@@ -8,8 +8,8 @@
     "test:up-env": "docker run --name api_polls_tests -p 65432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=polls_tests -d postgres:9.6",
     "test:down-env": "docker stop api_polls_tests && docker rm api_polls_tests",
     "test": "jest --runInBand --all",
-    "test:unit": "npm test -- --watch -config jest-unit.config.js",
-    "test:e2e": "npm test -- --watch -config jest-e2e.config.js",
+    "test:unit": "npm test -- --watchAll --config 'jest-unit.config.ts'",
+    "test:e2e": "npm test -- --watchAll --config 'jest-e2e.config.ts'",
     "test:coverage": "npm test -- --coverage",
     "test:log": "jest --passWithNoTests"
   },
