@@ -1,6 +1,14 @@
 import { DbAddAccount } from './db-add-account'
 import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Encrypter } from './protocols'
 
+const fakeAccountModel = {
+  id: 0,
+  name: 'Bob',
+  email: 'valid_email@domain.com',
+  password: 'hashed_password',
+  createdAt: new Date(Date.now())
+}
+
 const dbAddAccount = (): any => {
   class EncrypterStub implements Encrypter {
     async encrypt (value: string): Promise<string> {
@@ -10,15 +18,7 @@ const dbAddAccount = (): any => {
 
   class AddAccountRepositoryStub implements AddAccountRepository {
     async add (account: AddAccountModel): Promise<AccountModel> {
-      return await new Promise(resolve => {
-        resolve({
-          id: 0,
-          name: 'Bob',
-          email: 'valid_email@domain.com',
-          password: 'hashed_password',
-          createdAt: new Date(Date.now())
-        })
-      })
+      return await new Promise(resolve => { resolve(fakeAccountModel) })
     }
   }
 
@@ -67,12 +67,6 @@ describe('DbAddAccount Usecase', () => {
       email: 'valid_email@domain.com',
       password: '12345'
     })
-    expect(account).toEqual({
-      id: 0,
-      name: 'Bob',
-      email: 'valid_email@domain.com',
-      password: 'hashed_password',
-      createdAt: new Date(Date.now())
-    })
+    expect(account).toEqual(fakeAccountModel)
   })
 })
