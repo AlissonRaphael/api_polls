@@ -5,6 +5,7 @@ import { EmailValidatorAdapter } from '../../utils/email-validator'
 import { AccountPostgresRepository } from '../../infra/db/prisma/account-repository/account-repository'
 import { LogControllerDecorator } from '../decorators/log'
 import { type Controller } from '../../presentation/protocols'
+import { LogErrorPostgresRepository } from '../../infra/db/prisma/log-repository/log-repository'
 
 export function MakeSignUpController (): Controller {
   const salt = 12
@@ -13,5 +14,6 @@ export function MakeSignUpController (): Controller {
   const accountPostgresRepository = new AccountPostgresRepository()
   const addAccount = new DbAddAccount(bcryptAdapter, accountPostgresRepository)
   const signUpController = new SignUpController(emailValidatorAdapter, addAccount)
-  return new LogControllerDecorator(signUpController)
+  const logErrorPostgresRepository = new LogErrorPostgresRepository()
+  return new LogControllerDecorator(signUpController, logErrorPostgresRepository)
 }

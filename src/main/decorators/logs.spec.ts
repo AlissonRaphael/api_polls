@@ -3,8 +3,6 @@ import { serverError } from '../../presentation/helpers/http-helper'
 import { type Controller, type HttpRequest, type HttpResponse } from '../../presentation/protocols'
 import { LogControllerDecorator } from './log'
 
-const createdAt = new Date(Date.now())
-
 const httpRequest: HttpRequest = {
   body: {
     name: 'any_name',
@@ -21,7 +19,7 @@ const httpResponse: HttpResponse = {
     name: 'any_name',
     email: 'any_email@domain.com',
     password: '12345',
-    createdAt
+    createdAt: new Date(Date.now())
   }
 }
 
