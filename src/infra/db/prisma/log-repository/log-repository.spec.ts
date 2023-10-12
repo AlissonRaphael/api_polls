@@ -9,7 +9,7 @@ describe('LogError Postgres Repository', () => {
   test('Should create an error log on success', async () => {
     const logErrorPostgresRepository = new LogErrorPostgresRepository()
     const logError = 'any_stack'
-    await logErrorPostgresRepository.add(logError)
+    await logErrorPostgresRepository.log(logError)
 
     const count = await prisma.logError.count()
     expect(count).toBe(1)
