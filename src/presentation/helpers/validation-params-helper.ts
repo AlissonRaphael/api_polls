@@ -1,4 +1,3 @@
-export const validationParamRequest = (params: any): string | undefined => {
-  const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']
+export const validationParamRequest = (params: any, requiredFields: string[]): string | undefined => {
   return requiredFields.find(field => !params[field])
 }
