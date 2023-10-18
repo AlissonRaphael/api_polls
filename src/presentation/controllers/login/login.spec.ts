@@ -107,4 +107,12 @@ describe('Login Controller', () => {
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
+
+  test('Should return 200 if valid credetials are provided', async () => {
+    const { create } = makeLoginController()
+    const loginController = create()
+    const httpResponse = await loginController.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({ token: 'any_token' })
+  })
 })
