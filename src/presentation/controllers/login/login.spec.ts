@@ -1,6 +1,5 @@
 import { InvalidParamError, MissingParamError, ServerError, UnauthorizedError } from '../../errors'
-import { type EmailValidator } from '../signup/protocols'
-import { type Authentication } from '../../../domain/usecases/authentication'
+import { type EmailValidator, type Authentication } from './protocols'
 import LoginController from './login'
 
 const httpRequest = {
@@ -68,7 +67,7 @@ describe('Login Controller', () => {
   test('Should return 400 if invalid email provided', async () => {
     const { create, emailValidatorStub } = makeLoginController()
     const loginController = create()
-    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValue(false)
+    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)
     const httpResponse = await loginController.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new InvalidParamError('email'))
@@ -94,9 +93,18 @@ describe('Login Controller', () => {
   test('Should return 401 if invalid credentials are provided', async () => {
     const { create, authenticationStub } = makeLoginController()
     const loginController = create()
-    jest.spyOn(authenticationStub, 'auth').mockReturnValue(new Promise((resolve) => { resolve(null) }))
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(new Promise((resolve) => { resolve(null) }))
     const httpResponse = await loginController.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(401)
     expect(httpResponse.body).toEqual(new UnauthorizedError())
+  })
+
+  test('Should return 500 if Authentication throws', async () => {
+    const { create, authenticationStub } = makeLoginController()
+    const loginController = create()
+    jest.spyOn(authenticationStub, 'auth').mockImplementationOnce(() => { throw new Error() })
+    const httpResponse = await loginController.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 })
