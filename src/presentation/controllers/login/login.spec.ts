@@ -1,5 +1,6 @@
 import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
 import { type EmailValidator } from '../signup/protocols'
+import { type Authentication } from '../../../domain/usecases/authentication'
 import LoginController from './login'
 
 const httpRequest = {
@@ -16,10 +17,18 @@ const makeLoginController = (): any => {
     }
   }
 
+  class AuthenticationStub implements Authentication {
+    async auth (email: string, password: string): Promise<string> {
+      return await new Promise((resolve) => { resolve('any_token') })
+    }
+  }
+
   const emailValidatorStub = new EmailValidatorStub()
+  const authenticationStub = new AuthenticationStub()
   return {
-    create: () => new LoginController(emailValidatorStub),
-    emailValidatorStub
+    create: () => new LoginController(emailValidatorStub, authenticationStub),
+    emailValidatorStub,
+    authenticationStub
   }
 }
 
@@ -72,5 +81,13 @@ describe('Login Controller', () => {
     const httpResponse = await loginController.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should call Authentication with correct values', async () => {
+    const { create, authenticationStub } = makeLoginController()
+    const loginController = create()
+    const authSpy = jest.spyOn(authenticationStub, 'auth')
+    await loginController.handle(httpRequest)
+    expect(authSpy).toBeCalledWith('any_email@domain.com', '12345')
   })
 })
