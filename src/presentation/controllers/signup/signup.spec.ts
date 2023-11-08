@@ -13,7 +13,7 @@ const httpRequest = {
 
 const makeSignUpController = (): any => {
   class ValidationStub implements Validation {
-    validate(params: string[]): Error | null {
+    validate (params: string[]): Error | null {
       return null
     }
   }
