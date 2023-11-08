@@ -46,7 +46,7 @@ describe('SignUp Controller', () => {
     const validateSpy = jest.spyOn(validationStub, 'validate')
     const httpResponse = await signUpController.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
-    expect(validateSpy).toHaveBeenCalledWith(httpRequest)
+    expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
   })
 
   test('Should return 400 if Validation return an error', async () => {
