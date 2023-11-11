@@ -6,13 +6,13 @@ const makeCompareFieldsValidation = (): any => new CompareFieldsValidation('pass
 describe('CompareField Validation', () => {
   test('Should return a InvalidParamError if validation fails', () => {
     const compareFieldsValidation = makeCompareFieldsValidation()
-    const error = compareFieldsValidation.validate({ password: '123' }, { passwordConfirmation: '000' })
+    const error = compareFieldsValidation.validate({ password: '123', passwordConfirmation: '000' })
     expect(error).toEqual(new InvalidParamError('password'))
   })
 
   test('Should not return validation succeeds', () => {
     const compareFieldsValidation = makeCompareFieldsValidation()
-    const error = compareFieldsValidation.validate({ field: 'any_name' })
+    const error = compareFieldsValidation.validate({ password: '123', passwordConfirmation: '123' })
     expect(error).toBeFalsy()
   })
 })
