@@ -1,5 +1,5 @@
 import { InvalidParamError, MissingParamError, ServerError, UnauthorizedError } from '../../errors'
-import { type EmailValidator, type Authentication } from './protocols'
+import { type EmailValidator, type Authentication, type Validation } from './protocols'
 import LoginController from './login'
 
 const httpRequest = {
@@ -10,6 +10,12 @@ const httpRequest = {
 }
 
 const makeLoginController = (): any => {
+  class ValidationStub implements Validation {
+    validate (params: string[]): Error | null {
+      return null
+    }
+  }
+
   class EmailValidatorStub implements EmailValidator {
     isValid (email: string): boolean {
       return true
@@ -22,16 +28,35 @@ const makeLoginController = (): any => {
     }
   }
 
+  const validationStub = new ValidationStub()
   const emailValidatorStub = new EmailValidatorStub()
   const authenticationStub = new AuthenticationStub()
   return {
-    create: () => new LoginController(emailValidatorStub, authenticationStub),
+    create: () => new LoginController(validationStub, emailValidatorStub, authenticationStub),
     emailValidatorStub,
     authenticationStub
   }
 }
 
 describe('Login Controller', () => {
+  test('Should call Validation with correct values', async () => {
+    const { create, validationStub } = makeLoginController()
+    const signUpController = create()
+    const validateSpy = jest.spyOn(validationStub, 'validate')
+    const httpResponse = await signUpController.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
+  })
+
+  test('Should return 400 if Validation return an error', async () => {
+    const { create, validationStub } = makeLoginController()
+    const signUpController = create()
+    jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
+    const httpResponse = await signUpController.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new MissingParamError('any_field'))
+  })
+
   test('Should return 400 if no email is provided', async () => {
     const loginController = makeLoginController().create()
     const httpRequest = {
