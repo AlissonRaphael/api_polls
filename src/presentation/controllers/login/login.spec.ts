@@ -34,7 +34,8 @@ const makeLoginController = (): any => {
   return {
     create: () => new LoginController(validationStub, emailValidatorStub, authenticationStub),
     emailValidatorStub,
-    authenticationStub
+    authenticationStub,
+    validationStub
   }
 }
 
