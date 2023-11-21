@@ -1,10 +1,9 @@
-import { type HttpRequest, type HttpResponse, type Controller, type EmailValidator, type Authentication, type Validation } from './protocols'
+import { type HttpRequest, type HttpResponse, type Controller, type Authentication, type Validation } from './protocols'
 import { badRequest, ok, serverError, unauthorized } from '../../helpers/http-helper'
 
 export default class LoginController implements Controller {
   constructor (
     private readonly validation: Validation,
-    private readonly emailValidator: EmailValidator,
     private readonly authentication: Authentication
   ) {}
 
