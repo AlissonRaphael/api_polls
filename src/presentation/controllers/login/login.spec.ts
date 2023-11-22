@@ -1,4 +1,4 @@
-import { MissingParamError, ServerError } from '../../errors'
+import { MissingParamError, UnauthorizedError, ServerError } from '../../errors'
 import { type Authentication, type Validation } from './protocols'
 import LoginController from './login'
 
@@ -56,6 +56,15 @@ describe('Login Controller', () => {
     const authSpy = jest.spyOn(authenticationStub, 'auth')
     await loginController.handle(httpRequest)
     expect(authSpy).toBeCalledWith('any_email@domain.com', '12345')
+  })
+
+  test('Should return 401 if Authentication is invalid', async () => {
+    const { create, authenticationStub } = makeLoginController()
+    const loginController = create()
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(null)
+    const httpResponse = await loginController.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(401)
+    expect(httpResponse.body).toEqual(new UnauthorizedError())
   })
 
   test('Should return 500 if Authentication throws', async () => {
