@@ -1,10 +1,10 @@
-import { DbAddAccount } from '../../data/usecases/add-account/db-add-account'
-import { BcryptAdapter } from '../../infra/criptography/bcrypt-adapter'
-import { SignUpController } from '../../presentation/controllers/signup/signup'
-import { AccountPostgresRepository } from '../../infra/db/prisma/account-repository/account-repository'
-import { LogControllerDecorator } from '../decorators/log'
-import { type Controller } from '../../presentation/protocols'
-import { LogErrorPostgresRepository } from '../../infra/db/prisma/log-repository/log-repository'
+import { DbAddAccount } from '../../../data/usecases/add-account/db-add-account'
+import { BcryptAdapter } from '../../../infra/criptography/bcrypt-adapter'
+import { SignUpController } from '../../../presentation/controllers/signup/signup'
+import { AccountPostgresRepository } from '../../../infra/db/prisma/account-repository/account-repository'
+import { LogControllerDecorator } from '../../decorators/log'
+import { type Controller } from '../../../presentation/protocols'
+import { LogErrorPostgresRepository } from '../../../infra/db/prisma/log-repository/log-repository'
 import { MakeSignUpValidation } from './signup-validation'
 
 export function MakeSignUpController (): Controller {
