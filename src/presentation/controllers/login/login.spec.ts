@@ -1,5 +1,5 @@
 import { MissingParamError, UnauthorizedError, ServerError } from '../../errors'
-import { type Authentication, type Validation } from './protocols'
+import { type Authentication, type Validation, type AuthenticationModel } from './protocols'
 import LoginController from './login'
 
 const httpRequest = {
@@ -17,7 +17,7 @@ const makeLoginController = (): any => {
   }
 
   class AuthenticationStub implements Authentication {
-    async auth (email: string, password: string): Promise<string> {
+    async auth (authentication: AuthenticationModel): Promise<string> {
       return await new Promise((resolve) => { resolve('any_token') })
     }
   }
@@ -55,7 +55,7 @@ describe('Login Controller', () => {
     const loginController = create()
     const authSpy = jest.spyOn(authenticationStub, 'auth')
     await loginController.handle(httpRequest)
-    expect(authSpy).toBeCalledWith('any_email@domain.com', '12345')
+    expect(authSpy).toBeCalledWith({ email: 'any_email@domain.com', password: '12345' })
   })
 
   test('Should return 401 if Authentication is invalid', async () => {
