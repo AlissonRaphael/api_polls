@@ -1,5 +1,5 @@
 import { DbAddAccount } from './db-add-account'
-import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Encrypter } from './protocols'
+import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Encrypter } from './db-add-account-protocols'
 
 const fakeAccountModel = {
   id: 0,

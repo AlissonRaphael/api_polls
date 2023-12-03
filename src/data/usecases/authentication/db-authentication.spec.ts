@@ -1,9 +1,5 @@
 import { DbAuthentication } from './db-authentication'
-import { type AccountModel } from '../add-account/protocols'
-import { type LoadAccountByEmailRepository } from '../../protocols/db/load-account-by-email-repository'
-import { type HashComparer } from '../../protocols/criptography/hash-comparer'
-import { type TokenGenerator } from '../../protocols/criptography/token-generator'
-import { type UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository'
+import { type AccountModel, type LoadAccountByEmailRepository, type HashComparer, type TokenGenerator, type UpdateAccessTokenRepository } from './db-authentication-protocols'
 
 const fakeAccountModel = {
   id: 0,
