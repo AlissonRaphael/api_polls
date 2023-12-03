@@ -2,17 +2,23 @@ import { DbAuthentication } from './db-authentication'
 import { type AccountModel } from '../add-account/protocols'
 import { type LoadAccountByEmailRepository } from '../../protocols/load-account-by-email-repository'
 
+const fakeAccountModel = {
+  id: 0,
+  name: 'Bob',
+  email: 'valid_email@domain.com',
+  password: 'hashed_password',
+  createdAt: new Date(Date.now())
+}
+
+const fakeAuthentication = {
+  name: 'Bob',
+  email: 'valid_email@domain.com'
+}
+
 const makeDbAuthentication = (): any => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
     async load (email: string): Promise<AccountModel> {
-      const account: AccountModel = {
-        id: 1,
-        name: 'any_name',
-        email: 'any_email@valid_domain.com',
-        password: 'any_passowrd',
-        createdAt: new Date()
-      }
-      return await new Promise(resolve => { resolve(account) })
+      return await new Promise(resolve => { resolve(fakeAccountModel) })
     }
   }
 
@@ -28,10 +34,15 @@ describe('DbAuthentication UseCase', () => {
     const { create, loadAccountByEmailRepositoryStub } = makeDbAuthentication()
     const dbAuthentication = create()
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'load')
-    await dbAuthentication.auth({
-      email: 'any_email@valid_domain.com',
-      passowrd: 'any_passowrd'
-    })
-    expect(loadSpy).toHaveBeenCalledWith('any_email@valid_domain.com')
+    await dbAuthentication.auth(fakeAuthentication)
+    expect(loadSpy).toHaveBeenCalledWith('valid_email@domain.com')
+  })
+
+  test('Should throw if LoadAccountByEmailRepository throws', async () => {
+    const { create, loadAccountByEmailRepositoryStub } = makeDbAuthentication()
+    const dbAuthentication = create()
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    const promiseResult = dbAuthentication.auth(fakeAuthentication)
+    await expect(promiseResult).rejects.toThrow()
   })
 })
