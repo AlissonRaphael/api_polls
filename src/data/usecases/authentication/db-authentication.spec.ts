@@ -2,6 +2,7 @@ import { DbAuthentication } from './db-authentication'
 import { type AccountModel } from '../add-account/protocols'
 import { type LoadAccountByEmailRepository } from '../../protocols/db/load-account-by-email-repository'
 import { type HashComparer } from '../../protocols/criptography/hash-comparer'
+import { type TokenGenerator } from '../../protocols/criptography/token-generator'
 
 const fakeAccountModel = {
   id: 0,
@@ -29,12 +30,20 @@ const makeDbAuthentication = (): any => {
     }
   }
 
+  class TokenGeneratorStub implements TokenGenerator {
+    async generate (id: number): Promise<string> {
+      return await new Promise(resolve => { resolve('any_token') })
+    }
+  }
+
   const loadAccountByEmailRepositoryStub = new LoadAccountByEmailRepositoryStub()
+  const tokenGeneratorStub = new TokenGeneratorStub()
   const hashComparerStub = new HashComparerStub()
   return {
-    create: () => new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub),
+    create: () => new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub, tokenGeneratorStub),
     loadAccountByEmailRepositoryStub,
-    hashComparerStub
+    hashComparerStub,
+    tokenGeneratorStub
   }
 }
 
@@ -85,5 +94,27 @@ describe('DbAuthentication UseCase', () => {
     jest.spyOn(hashComparerStub, 'compare').mockReturnValue(new Promise(resolve => { resolve(false) }))
     const accessToken = await dbAuthentication.auth(fakeAuthentication)
     expect(accessToken).toBeNull()
+  })
+
+  test('Should call TokenGenerator with correct id', async () => {
+    const { create, tokenGeneratorStub } = makeDbAuthentication()
+    const dbAuthentication = create()
+    const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate')
+    await dbAuthentication.auth(fakeAuthentication)
+    expect(generateSpy).toHaveBeenCalledWith(0)
+  })
+
+  test('Should throw if TokenGenerator throws', async () => {
+    const { create, tokenGeneratorStub } = makeDbAuthentication()
+    const dbAuthentication = create()
+    jest.spyOn(tokenGeneratorStub, 'generate').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    const promiseAccessToken = dbAuthentication.auth(fakeAuthentication)
+    await expect(promiseAccessToken).rejects.toThrow()
+  })
+
+  test('Should return an access token if TokenGenerator on success', async () => {
+    const dbAuthentication = makeDbAuthentication().create()
+    const accessToken = await dbAuthentication.auth(fakeAuthentication)
+    expect(accessToken).toBe('any_token')
   })
 })
