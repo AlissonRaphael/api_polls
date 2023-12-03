@@ -1,6 +1,6 @@
 import { DbAuthentication } from './db-authentication'
 import { type AccountModel } from '../add-account/protocols'
-import { type LoadAccountByEmailRepository } from '../../protocols/load-account-by-email-repository'
+import { type LoadAccountByEmailRepository } from '../../protocols/db/load-account-by-email-repository'
 
 const fakeAccountModel = {
   id: 0,
