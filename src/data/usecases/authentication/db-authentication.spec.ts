@@ -3,6 +3,7 @@ import { type AccountModel } from '../add-account/protocols'
 import { type LoadAccountByEmailRepository } from '../../protocols/db/load-account-by-email-repository'
 import { type HashComparer } from '../../protocols/criptography/hash-comparer'
 import { type TokenGenerator } from '../../protocols/criptography/token-generator'
+import { type UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository'
 
 const fakeAccountModel = {
   id: 0,
@@ -36,14 +37,27 @@ const makeDbAuthentication = (): any => {
     }
   }
 
+  class UpdateAccessTokenRepositoryStub implements UpdateAccessTokenRepository {
+    async update (id: number, token: string): Promise<void> {
+      await new Promise(resolve => { resolve('') })
+    }
+  }
+
   const loadAccountByEmailRepositoryStub = new LoadAccountByEmailRepositoryStub()
   const tokenGeneratorStub = new TokenGeneratorStub()
   const hashComparerStub = new HashComparerStub()
+  const updateAccessTokenRepositoryStub = new UpdateAccessTokenRepositoryStub()
   return {
-    create: () => new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub, tokenGeneratorStub),
+    create: () => new DbAuthentication(
+      loadAccountByEmailRepositoryStub,
+      hashComparerStub,
+      tokenGeneratorStub,
+      updateAccessTokenRepositoryStub
+    ),
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub
+    tokenGeneratorStub,
+    updateAccessTokenRepositoryStub
   }
 }
 
@@ -116,5 +130,21 @@ describe('DbAuthentication UseCase', () => {
     const dbAuthentication = makeDbAuthentication().create()
     const accessToken = await dbAuthentication.auth(fakeAuthentication)
     expect(accessToken).toBe('any_token')
+  })
+
+  test('Should call UpdateAccessTokenRepository with correct values', async () => {
+    const { create, updateAccessTokenRepositoryStub } = makeDbAuthentication()
+    const dbAuthentication = create()
+    const updateSpy = jest.spyOn(updateAccessTokenRepositoryStub, 'update')
+    await dbAuthentication.auth(fakeAuthentication)
+    expect(updateSpy).toHaveBeenCalledWith(0, 'any_token')
+  })
+
+  test('Should throw if UpdateAccessTokenRepository throws', async () => {
+    const { create, updateAccessTokenRepositoryStub } = makeDbAuthentication()
+    const dbAuthentication = create()
+    jest.spyOn(updateAccessTokenRepositoryStub, 'update').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    const promiseAccessToken = dbAuthentication.auth(fakeAuthentication)
+    await expect(promiseAccessToken).rejects.toThrow()
   })
 })
