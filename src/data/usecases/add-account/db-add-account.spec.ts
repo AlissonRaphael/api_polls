@@ -1,5 +1,5 @@
 import { DbAddAccount } from './db-add-account'
-import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Encrypter } from './db-add-account-protocols'
+import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Hasher } from './db-add-account-protocols'
 
 const fakeAccountModel = {
   id: 0,
@@ -10,8 +10,8 @@ const fakeAccountModel = {
 }
 
 const dbAddAccount = (): any => {
-  class EncrypterStub implements Encrypter {
-    async encrypt (value: string): Promise<string> {
+  class HasherStub implements Hasher {
+    async hash (value: string): Promise<string> {
       return await new Promise(resolve => { resolve('hashed_password') })
     }
   }
@@ -22,26 +22,26 @@ const dbAddAccount = (): any => {
     }
   }
 
-  const encrypterStub = new EncrypterStub()
+  const hasherStub = new HasherStub()
   const addAccountRepositoryStub = new AddAccountRepositoryStub()
   return {
-    create: () => new DbAddAccount(encrypterStub, addAccountRepositoryStub),
-    encrypterStub,
+    create: () => new DbAddAccount(hasherStub, addAccountRepositoryStub),
+    hasherStub,
     addAccountRepositoryStub
   }
 }
 
 describe('DbAddAccount Usecase', () => {
-  test('Should call encrypter with correct password', async () => {
-    const { create, encrypterStub } = dbAddAccount()
+  test('Should call Hasher with correct password', async () => {
+    const { create, hasherStub } = dbAddAccount()
     const addAccountTest = create()
-    const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
+    const hashSpy = jest.spyOn(hasherStub, 'hash')
     await addAccountTest.add({
       name: 'Bob',
       email: 'valid_email@domain.com',
       password: '12345'
     })
-    expect(encryptSpy).toHaveBeenCalledWith('12345')
+    expect(hashSpy).toHaveBeenCalledWith('12345')
   })
 
   test('Should call AddAccountRepository with correct values', async () => {
