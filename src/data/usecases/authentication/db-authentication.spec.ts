@@ -1,5 +1,5 @@
 import { DbAuthentication } from './db-authentication'
-import { type AccountModel, type LoadAccountByEmailRepository, type HashComparer, type TokenGenerator, type UpdateAccessTokenRepository } from './db-authentication-protocols'
+import { type AccountModel, type LoadAccountByEmailRepository, type HashComparer, type Encrypter, type UpdateAccessTokenRepository } from './db-authentication-protocols'
 
 const fakeAccountModel = {
   id: 0,
@@ -27,8 +27,8 @@ const makeDbAuthentication = (): any => {
     }
   }
 
-  class TokenGeneratorStub implements TokenGenerator {
-    async generate (id: number): Promise<string> {
+  class EncrypterStub implements Encrypter {
+    async encrypt (value: number): Promise<string> {
       return await new Promise(resolve => { resolve('any_token') })
     }
   }
@@ -40,19 +40,19 @@ const makeDbAuthentication = (): any => {
   }
 
   const loadAccountByEmailRepositoryStub = new LoadAccountByEmailRepositoryStub()
-  const tokenGeneratorStub = new TokenGeneratorStub()
   const hashComparerStub = new HashComparerStub()
+  const encrypterStub = new EncrypterStub()
   const updateAccessTokenRepositoryStub = new UpdateAccessTokenRepositoryStub()
   return {
     create: () => new DbAuthentication(
       loadAccountByEmailRepositoryStub,
       hashComparerStub,
-      tokenGeneratorStub,
+      encrypterStub,
       updateAccessTokenRepositoryStub
     ),
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
-    tokenGeneratorStub,
+    encrypterStub,
     updateAccessTokenRepositoryStub
   }
 }
@@ -106,23 +106,23 @@ describe('DbAuthentication UseCase', () => {
     expect(accessToken).toBeNull()
   })
 
-  test('Should call TokenGenerator with correct id', async () => {
-    const { create, tokenGeneratorStub } = makeDbAuthentication()
+  test('Should call Encrypter with correct id', async () => {
+    const { create, encrypterStub } = makeDbAuthentication()
     const dbAuthentication = create()
-    const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate')
+    const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
     await dbAuthentication.auth(fakeAuthentication)
-    expect(generateSpy).toHaveBeenCalledWith(0)
+    expect(encryptSpy).toHaveBeenCalledWith(0)
   })
 
-  test('Should throw if TokenGenerator throws', async () => {
-    const { create, tokenGeneratorStub } = makeDbAuthentication()
+  test('Should throw if Encrypter throws', async () => {
+    const { create, encrypterStub } = makeDbAuthentication()
     const dbAuthentication = create()
-    jest.spyOn(tokenGeneratorStub, 'generate').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
+    jest.spyOn(encrypterStub, 'encrypt').mockReturnValueOnce(new Promise((resolve, reject) => { reject(new Error()) }))
     const promiseAccessToken = dbAuthentication.auth(fakeAuthentication)
     await expect(promiseAccessToken).rejects.toThrow()
   })
 
-  test('Should return an access token if TokenGenerator on success', async () => {
+  test('Should return a access token on success', async () => {
     const dbAuthentication = makeDbAuthentication().create()
     const accessToken = await dbAuthentication.auth(fakeAuthentication)
     expect(accessToken).toBe('any_token')
