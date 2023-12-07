@@ -1,5 +1,5 @@
-import { DbAddAccount } from './db-add-account'
 import { type AccountModel, type AddAccountModel, type AddAccountRepository, type Hasher } from './db-add-account-protocols'
+import { DbAddAccount } from './db-add-account'
 
 const fakeAccountModel = {
   id: 0,
