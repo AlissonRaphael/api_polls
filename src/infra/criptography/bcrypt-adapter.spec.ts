@@ -26,9 +26,9 @@ describe('Bcrypt Adapter', () => {
     expect(hashSpy).toHaveBeenCalledWith('any_value', SALT)
   })
 
-  test('Should throw if bcrypt throws', async () => {
+  test('Should throw if hash throws', async () => {
     const bcryptAdapter = makeBcryptAdapter().create()
-    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => { throw new Error() })
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(async () => { throw new Error() })
     const promise = bcryptAdapter.hash('any_value')
     await expect(promise).rejects.toThrow()
   })
@@ -57,5 +57,12 @@ describe('Bcrypt Adapter', () => {
     const bcryptAdapterTest = makeBcryptAdapter().create()
     const isValid = await bcryptAdapterTest.compare('any_value', 'any_hash')
     expect(isValid).toBe(true)
+  })
+
+  test('Should throw if compare throws', async () => {
+    const bcryptAdapter = makeBcryptAdapter().create()
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(async () => { throw new Error() })
+    const promise = bcryptAdapter.compare('any_value', 'any_hash')
+    await expect(promise).rejects.toThrow()
   })
 })
